@@ -127,33 +127,6 @@
       backdrop-filter: blur(4px);
     }
 
-    /* ----------------------------- Bio facts -----------------------------
-       Replaces the old hero pills. Each fact is a tiny labeled card —
-       compact data sheet look. Owner can flip them to contenteditable
-       via the Soccer Bio Edit button; only the .bio-fact-value spans
-       are editable, the labels stay locked. */
-    .bio-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 0.75rem;
-      margin-bottom: 1.5rem;
-    }
-    .bio-fact {
-      background: var(--chalk);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      padding: 0.65rem 0.85rem;
-      display: flex; flex-direction: column; gap: 0.15rem;
-    }
-    .bio-fact-label {
-      font-size: 0.7rem; font-weight: 700;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--muted);
-    }
-    .bio-fact-value {
-      font-size: 1.05rem; font-weight: 700;
-      color: var(--pitch-deep);
-    }
 
     /* ---------------------------- Layout ---------------------------- */
     main {
@@ -639,8 +612,12 @@
       <ul class="profile-list" id="personal-list">
         <li><span class="label">Name</span>           <span class="value">Vincent Ripellino</span></li>
         <li><span class="label">Hometown</span>       <span class="value">Rosario, Argentina</span></li>
+        <li><span class="label">Age</span>            <span class="value">25</span></li>
         <li><span class="label">Currently With</span> <span class="value">Velocity FC — Senior Squad</span></li>
+        <li><span class="label">Height</span>         <span class="value">1.93 m</span></li>
         <li><span class="label">Weight</span>         <span class="value">84 kg</span></li>
+        <li><span class="label">Handedness</span>     <span class="value">Right-handed</span></li>
+        <li><span class="label">Reach</span>          <span class="value">2.42 m</span></li>
         <li><span class="label">Phone</span>          <span class="value">+54 11 5555-0199</span></li>
         <li><span class="label">Email</span>          <span class="value">agent@example.com</span></li>
       </ul>
@@ -676,39 +653,11 @@
 
     <!-- =================== Panel: Career Stats =================== -->
     <section class="card panel" id="panel-stats" role="tabpanel">
-      <h2>Soccer Bio <small class="muted">(physical profile + senior career stats)</small>
-        <button type="button" id="bio-edit-btn" class="edit-btn owner-only"
-                aria-label="Toggle inline editing of Soccer Bio facts">✏️ Edit</button>
-      </h2>
+      <h2>Soccer Bio <small class="muted">(senior career stats)</small></h2>
 
-      <!-- Physical/biographical facts as little labeled cards. In Owner
-           mode the Edit button flips every .bio-fact-value into
-           contenteditable so values can be updated; labels stay locked
-           (they're the stable schema). Persists to localStorage. -->
-      <div class="bio-grid">
-        <div class="bio-fact">
-          <span class="bio-fact-label">Handedness</span>
-          <span class="bio-fact-value">Right-handed</span>
-        </div>
-        <div class="bio-fact">
-          <span class="bio-fact-label">Height</span>
-          <span class="bio-fact-value">1.93 m</span>
-        </div>
-        <div class="bio-fact">
-          <span class="bio-fact-label">Age</span>
-          <span class="bio-fact-value">25</span>
-        </div>
-        <div class="bio-fact">
-          <span class="bio-fact-label">Country</span>
-          <span class="bio-fact-value">Argentina</span>
-        </div>
-        <div class="bio-fact">
-          <span class="bio-fact-label">Reach</span>
-          <span class="bio-fact-value">2.42 m</span>
-        </div>
-      </div>
-
-      <h3>Career Totals <small class="muted">(all senior competitions)</small></h3>
+      <!-- Physical/biographical facts (height, age, handedness, reach) live
+           in the Personal Bio profile-list — single source of truth, no
+           duplication. This panel is now strictly career performance. -->
       <div class="stat-grid">
         <div class="stat"><span class="num">104</span> <span class="label">Appearances</span></div>
         <div class="stat"><span class="num">38</span>  <span class="label">Clean Sheets</span></div>
@@ -1058,23 +1007,20 @@
     // free-form bio paragraphs, the section headings (h3), and the
     // Strengths/Working-On <ul>s are all editable. The selector EXCLUDES
     // .profile-list itself (we edit the inner .value spans instead) to
-    // avoid double-counting the same DOM region. LS key bumped to _v2
-    // because the panel schema changed — old saves stay parked but unused.
+    // avoid double-counting the same DOM region. LS key bumped to _v3
+    // because the profile-list grew from 6 → 10 items (physical facts
+    // consolidated here from the old Soccer Bio bio-grid).
     createInlineEditor({
       panelId:  "panel-about",
       btnId:    "about-edit-btn",
-      lsKey:    "vrip_about_html_v2",
+      lsKey:    "vrip_about_html_v3",
       selector: "#personal-list .value, p, h3, ul:not(.profile-list)",
     });
 
-    // Soccer Bio facts — only the values are editable; labels are the
-    // stable schema and must not be touched by the owner.
-    createInlineEditor({
-      panelId:  "panel-stats",
-      btnId:    "bio-edit-btn",
-      lsKey:    "vrip_bio_facts",
-      selector: ".bio-fact-value",
-    });
+    // Soccer Bio no longer has editable bio-facts — the panel is now
+    // strictly career stats (Career Totals + By Competition table).
+    // If we make the stat numbers editable later, register here.
+  
   </script>
 </body>
 </html>
