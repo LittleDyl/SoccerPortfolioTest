@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Marco Vidal — Goalkeeper Portfolio</title>
+  <title>Vincent Ripellino — Goalkeeper Portfolio</title>
 
   <!-- Inline SVG favicon: a tiny pentagon-paneled ball -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,
@@ -267,47 +267,6 @@
 
     .num-cell { text-align: right; font-variant-numeric: tabular-nums; }
 
-    /* -------------------------- Fixture list -------------------------- */
-    .fixture {
-      display: flex;
-      align-items: center;
-      gap: 0.9rem;
-      padding: 0.85rem 0;
-      border-bottom: 1px solid var(--line);
-    }
-    .fixture:last-child { border-bottom: none; }
-
-    .fixture .date {
-      flex: 0 0 90px;
-      text-align: center;
-      background: var(--pitch);
-      color: #fff;
-      border-radius: var(--radius-sm);
-      padding: 0.45rem 0.3rem;
-      font-size: 0.78rem;
-      line-height: 1.2;
-    }
-    .fixture .date strong {
-      display: block;
-      font-size: 1.05rem;
-      letter-spacing: 0.03em;
-    }
-
-    .fixture .meta { flex: 1; }
-    .fixture .meta .opponent { font-weight: 600; }
-    .fixture .meta .where { font-size: 0.85rem; color: var(--muted); }
-
-    .fixture .comp {
-      flex: 0 0 auto;
-      background: var(--kit-accent);
-      color: #fff;
-      font-size: 0.72rem;
-      padding: 0.2rem 0.55rem;
-      border-radius: 999px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
     /* ----------------------- About photo ----------------------- */
     /* Larger display photo inside the About panel. Shares its src
        with .player-photo so a single file update refreshes both. */
@@ -370,8 +329,6 @@
       .player-photo { width: 110px; height: 110px; }
       main { margin-top: -2rem; }
       .card { padding: 1.1rem; }
-      .fixture { flex-wrap: wrap; }
-      .fixture .date { flex: 0 0 70px; }
     }
   </style>
 </head>
@@ -382,9 +339,9 @@
   <header class="hero">
     <div class="hero-inner">
       <!-- Swap src for a real photo; placeholder uses inline SVG -->
-      <img class="player-photo" alt="Marco Vidal portrait"
+      <img class="player-photo" alt="Vincent Ripellino portrait"
            src="images/marco.jpg" />
-      <h1 id="player-name">Marco Vidal</h1>
+      <h1 id="player-name">Vincent Ripellino</h1>
       <p class="tagline">Goalkeeper · #1 · Riverside FC</p>
       <div class="badge-row">
         <span class="badge">Right-handed</span>
@@ -404,23 +361,22 @@
       <button class="tab active" role="tab" data-tab="about"    aria-selected="true">About</button>
       <button class="tab"        role="tab" data-tab="stats"    aria-selected="false">Career Stats</button>
       <button class="tab"        role="tab" data-tab="season"   aria-selected="false">Season Log</button>
-      <button class="tab"        role="tab" data-tab="fixtures" aria-selected="false">Fixtures</button>
       <button class="tab"        role="tab" data-tab="film"     aria-selected="false">Highlights</button>
     </nav>
 
     <!-- =================== Panel: About =================== -->
     <section class="card panel active" id="panel-about" role="tabpanel">
       <h2>About Me</h2>
-      <img class="about-photo" src="images/marco.jpg" alt="Marco Vidal" />
+      <img class="about-photo" src="images/marco.jpg" alt="Vincent Ripellino" />
       <p>
-        Marco is a modern shot-stopper who commands his box and starts attacks with
+        Vincent is a modern shot-stopper who commands his box and starts attacks with
         his feet. Born in Rosario, he started out as an outfield player before a growth
         spurt at fourteen sent him between the sticks — and he never looked back. He
         joined the Riverside FC academy at sixteen, made his senior debut at twenty,
         and has been the first-choice keeper for the past two seasons.
       </p>
       <p>
-        Off the pitch, Marco runs a Saturday-morning goalkeeping clinic for U12s,
+        Off the pitch, Vincent runs a Saturday-morning goalkeeping clinic for U12s,
         studies sports psychology, and has a slightly unhinged collection of vintage
         goalkeeper gloves dating back to the early 2000s.
       </p>
@@ -511,56 +467,6 @@
       </p>
     </section>
 
-    <!-- =================== Panel: Fixtures =================== -->
-    <section class="card panel" id="panel-fixtures" role="tabpanel">
-      <h2>Upcoming Fixtures</h2>
-
-      <div class="fixture">
-        <div class="date"><strong>NOV 09</strong>15:00</div>
-        <div class="meta">
-          <div class="opponent">vs. Glenwood Rovers</div>
-          <div class="where">Home · Riverside Stadium</div>
-        </div>
-        <span class="comp">League</span>
-      </div>
-
-      <div class="fixture">
-        <div class="date"><strong>NOV 16</strong>19:30</div>
-        <div class="meta">
-          <div class="opponent">at Maple Heights FC</div>
-          <div class="where">Away · Maple Heights Arena</div>
-        </div>
-        <span class="comp">League</span>
-      </div>
-
-      <div class="fixture">
-        <div class="date"><strong>NOV 22</strong>20:00</div>
-        <div class="meta">
-          <div class="opponent">vs. FK Solnedgang</div>
-          <div class="where">Home · Continental Cup Group Stage</div>
-        </div>
-        <span class="comp">Cont. Cup</span>
-      </div>
-
-      <div class="fixture">
-        <div class="date"><strong>NOV 30</strong>16:45</div>
-        <div class="meta">
-          <div class="opponent">vs. Iron Mills</div>
-          <div class="where">Neutral · National Cup Round of 16</div>
-        </div>
-        <span class="comp">Cup</span>
-      </div>
-
-      <div class="fixture">
-        <div class="date"><strong>DEC 07</strong>14:00</div>
-        <div class="meta">
-          <div class="opponent">vs. Westbrook City</div>
-          <div class="where">Home · Riverside Stadium</div>
-        </div>
-        <span class="comp">League</span>
-      </div>
-    </section>
-
     <!-- =================== Panel: Highlights =================== -->
     <section class="card panel" id="panel-film" role="tabpanel">
       <h2>Highlight Reels</h2>
@@ -581,7 +487,7 @@
   </main>
 
   <footer>
-    Marco Vidal · Goalkeeper · Contact: <a href="mailto:agent@example.com">agent@example.com</a>
+    Vincent Ripellino · Goalkeeper · Contact: <a href="mailto:agent@example.com">agent@example.com</a>
   </footer>
 
   <script>
