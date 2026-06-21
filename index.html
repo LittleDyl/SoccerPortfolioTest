@@ -127,16 +127,32 @@
       backdrop-filter: blur(4px);
     }
 
-    /* Panel-scoped variant — same pill shape, but darker palette so the
-       badges remain readable on the white card background. Overrides the
-       hero-tuned translucent white. DRY: only the colors change. */
-    .panel .badge-row { margin-bottom: 1.25rem; justify-content: flex-start; }
-    .panel .badge {
+    /* ----------------------------- Bio facts -----------------------------
+       Replaces the old hero pills. Each fact is a tiny labeled card —
+       compact data sheet look. Owner can flip them to contenteditable
+       via the Soccer Bio Edit button; only the .bio-fact-value spans
+       are editable, the labels stay locked. */
+    .bio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .bio-fact {
       background: var(--chalk);
-      border-color: var(--line);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.85rem;
+      display: flex; flex-direction: column; gap: 0.15rem;
+    }
+    .bio-fact-label {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .bio-fact-value {
+      font-size: 1.05rem; font-weight: 700;
       color: var(--pitch-deep);
-      font-weight: 600;
-      backdrop-filter: none;
     }
 
     /* ---------------------------- Layout ---------------------------- */
@@ -603,17 +619,36 @@
 
     <!-- =================== Panel: Career Stats =================== -->
     <section class="card panel" id="panel-stats" role="tabpanel">
-      <h2>Soccer Bio <small class="muted">(physical profile + senior career stats)</small></h2>
+      <h2>Soccer Bio <small class="muted">(physical profile + senior career stats)</small>
+        <button type="button" id="bio-edit-btn" class="edit-btn owner-only"
+                aria-label="Toggle inline editing of Soccer Bio facts">✏️ Edit</button>
+      </h2>
 
-      <!-- Physical/biographical pills — moved here from the hero so all
-           the soccer-side facts live in one tab. Visitors get the quick
-           glance; owners can later edit these inline (future work). -->
-      <div class="badge-row">
-        <span class="badge">Right-handed</span>
-        <span class="badge">1.93 m</span>
-        <span class="badge">Age 25</span>
-        <span class="badge">Argentina</span>
-        <span class="badge">Reach 2.42 m</span>
+      <!-- Physical/biographical facts as little labeled cards. In Owner
+           mode the Edit button flips every .bio-fact-value into
+           contenteditable so values can be updated; labels stay locked
+           (they're the stable schema). Persists to localStorage. -->
+      <div class="bio-grid">
+        <div class="bio-fact">
+          <span class="bio-fact-label">Handedness</span>
+          <span class="bio-fact-value">Right-handed</span>
+        </div>
+        <div class="bio-fact">
+          <span class="bio-fact-label">Height</span>
+          <span class="bio-fact-value">1.93 m</span>
+        </div>
+        <div class="bio-fact">
+          <span class="bio-fact-label">Age</span>
+          <span class="bio-fact-value">25</span>
+        </div>
+        <div class="bio-fact">
+          <span class="bio-fact-label">Country</span>
+          <span class="bio-fact-value">Argentina</span>
+        </div>
+        <div class="bio-fact">
+          <span class="bio-fact-label">Reach</span>
+          <span class="bio-fact-value">2.42 m</span>
+        </div>
       </div>
 
       <h3>Career Totals <small class="muted">(all senior competitions)</small></h3>
@@ -909,33 +944,42 @@
     OwnerGate.init();
 
     /* ==========================================================
-       About-section inline editor — demo of an owner-only feature.
-       Click ✏️ Edit (only visible to owners) to flip the About
-       paragraphs into contenteditable mode. Changes persist in
-       localStorage so a refresh keeps the edits, scoped to this
-       browser only (no backend). Click again to save & exit.
+       Inline editor factory — owner-only contenteditable toggle.
+
+       Single source of truth for the "click Edit → fields become
+       editable → click Save → snapshot to localStorage" pattern.
+       DRY win: every panel that wants inline editing just calls
+       createInlineEditor({...}) once with its config. Add a third
+       editor in two lines.
+
+       Config:
+         panelId    — element id of the section being edited
+         btnId      — element id of the toggle button (lives in the h2)
+         lsKey      — localStorage key for persistence
+         selector   — CSS selector for editable elements WITHIN the panel
+
+       Persistence model: serialize the outerHTML of each matched
+       element and re-hydrate by replacing in order on load. Works for
+       <p>, <ul>, <span class="bio-fact-value">, etc. — anything whose
+       element count is stable across edits.
        ========================================================== */
-    (function initAboutEditor() {
-      const LS_KEY = "vrip_about_html";
-      const btn    = document.getElementById("about-edit-btn");
-      const panel  = document.getElementById("panel-about");
+    function createInlineEditor({ panelId, btnId, lsKey, selector }) {
+      const btn   = document.getElementById(btnId);
+      const panel = document.getElementById(panelId);
       if (!btn || !panel) return;
 
-      // The editable region = everything in the about panel except the
-      // <h2> title (which holds the Edit button itself) and the photo.
-      const editableSelector = "p, h3, ul";
-      const targets = () => panel.querySelectorAll(editableSelector);
+      const targets = () => panel.querySelectorAll(selector);
 
-      // Restore any previously-saved edits on load.
-      const saved = localStorage.getItem(LS_KEY);
+      // Rehydrate any saved edits from a prior session.
+      const saved = localStorage.getItem(lsKey);
       if (saved) {
-        // Render into a sandbox div, then replace just the editable bits.
-        // This way we don't blow away the <h2> / photo / Edit button.
-        const wrap = document.createElement("div");
-        wrap.innerHTML = saved;
-        const fresh = wrap.querySelectorAll(editableSelector);
+        const sandbox = document.createElement("div");
+        sandbox.innerHTML = saved;
+        const fresh   = sandbox.querySelectorAll(selector);
         const current = targets();
-        if (fresh.length === current.length) {
+        // Only replace if the schema matches — guards against stale
+        // localStorage written when the panel had a different shape.
+        if (fresh.length === current.length && fresh.length > 0) {
           fresh.forEach((node, i) => current[i].replaceWith(node));
         }
       }
@@ -945,13 +989,30 @@
         targets().forEach(el => el.setAttribute("contenteditable", editing));
         btn.textContent = editing ? "💾 Save" : "✏️ Edit";
         if (!editing) {
-          // Persist a snapshot of the editable region. We serialize the
-          // outerHTML of each editable element joined together.
-          const snapshot = Array.from(targets()).map(el => el.outerHTML).join("\n");
-          localStorage.setItem(LS_KEY, snapshot);
+          const snapshot = Array.from(targets())
+                                .map(el => el.outerHTML)
+                                .join("\n");
+          localStorage.setItem(lsKey, snapshot);
         }
       });
-    })();
+    }
+
+    // Personal Bio — paragraphs, subheadings, and lists are all editable.
+    createInlineEditor({
+      panelId:  "panel-about",
+      btnId:    "about-edit-btn",
+      lsKey:    "vrip_about_html",
+      selector: "p, h3, ul",
+    });
+
+    // Soccer Bio facts — only the values are editable; labels are the
+    // stable schema and must not be touched by the owner.
+    createInlineEditor({
+      panelId:  "panel-stats",
+      btnId:    "bio-edit-btn",
+      lsKey:    "vrip_bio_facts",
+      selector: ".bio-fact-value",
+    });
   </script>
 </body>
 </html>
