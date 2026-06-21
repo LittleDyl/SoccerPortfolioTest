@@ -295,6 +295,50 @@
 
     .num-cell { text-align: right; font-variant-numeric: tabular-nums; }
 
+    /* ----------------------- Profile list (Personal Bio) -----------------------
+       Ported from lukethomasselzer.com's .profile-list. Two-column key/value
+       info card that collapses to 1 column on phones. The leading pitch-soft
+       border on each item is the visual signature — feels structured, not
+       like a generic table. */
+    .profile-list {
+      list-style: none;
+      padding: 0; margin: 0 0 1.4rem;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.6rem 1.2rem;
+    }
+    @media (max-width: 540px) {
+      .profile-list { grid-template-columns: 1fr; }
+    }
+    /* Lonely-last-child fix: when there's an odd number of items, the trailing
+       one would sit alone in row N with an empty cell beside it — looks ragged.
+       Letting it span both columns turns that gap into intentional emphasis.
+       (No-op for even counts. Skipped on mobile where the grid is 1-col.) */
+    @media (min-width: 541px) {
+      .profile-list li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+    }
+    .profile-list li {
+      padding: 0.7rem 0.9rem;
+      background: var(--chalk);
+      border-left: 3px solid var(--pitch-soft);
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    .profile-list .label {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.15rem;
+      font-weight: 700;
+    }
+    .profile-list .value {
+      display: block;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
     /* ----------------------- About photo ----------------------- */
     /* Larger display photo inside the About panel. Shares its src
        with .player-photo so a single file update refreshes both. */
@@ -588,6 +632,19 @@
                 aria-label="Toggle inline editing of Personal Bio">✏️ Edit</button>
       </h2>
       <img class="about-photo" src="images/marco.jpg" alt="Vincent Ripellino" />
+
+      <!-- Profile list — structured key/value facts. Only the .value spans
+           are editable in Owner mode; the .label spans are the locked
+           schema (renaming "Hometown" → "Hommetown" would be a bad day). -->
+      <ul class="profile-list" id="personal-list">
+        <li><span class="label">Name</span>           <span class="value">Vincent Ripellino</span></li>
+        <li><span class="label">Hometown</span>       <span class="value">Rosario, Argentina</span></li>
+        <li><span class="label">Currently With</span> <span class="value">Velocity FC — Senior Squad</span></li>
+        <li><span class="label">Weight</span>         <span class="value">84 kg</span></li>
+        <li><span class="label">Phone</span>          <span class="value">+54 11 5555-0199</span></li>
+        <li><span class="label">Email</span>          <span class="value">agent@example.com</span></li>
+      </ul>
+
       <p>
         Vincent is a modern shot-stopper who commands his box and starts attacks with
         his feet. Born in Rosario, he started out as an outfield player before a growth
@@ -997,12 +1054,17 @@
       });
     }
 
-    // Personal Bio — paragraphs, subheadings, and lists are all editable.
+    // Personal Bio — profile-list values (locked-label/editable-value cards),
+    // free-form bio paragraphs, the section headings (h3), and the
+    // Strengths/Working-On <ul>s are all editable. The selector EXCLUDES
+    // .profile-list itself (we edit the inner .value spans instead) to
+    // avoid double-counting the same DOM region. LS key bumped to _v2
+    // because the panel schema changed — old saves stay parked but unused.
     createInlineEditor({
       panelId:  "panel-about",
       btnId:    "about-edit-btn",
-      lsKey:    "vrip_about_html",
-      selector: "p, h3, ul",
+      lsKey:    "vrip_about_html_v2",
+      selector: "#personal-list .value, p, h3, ul:not(.profile-list)",
     });
 
     // Soccer Bio facts — only the values are editable; labels are the
